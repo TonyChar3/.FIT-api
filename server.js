@@ -11,6 +11,9 @@ import connectDB from './config/dbConnection.js';
 import passPort from './config/passport.js';
 import userRoutes from './routes/userRoutes.js';
 import errorHandler from './middleware/errorHandler.js';
+import productRoutes from './routes/productRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import stripe from 'stripe';
 
 // access the .env variables
 dotenv.config();
@@ -42,6 +45,12 @@ app.use(cors());
 
 // routes for the user 
 app.use('/user', userRoutes);
+
+// routes for the shop
+app.use('/shop', productRoutes);
+
+// routes for admin
+app.use('/admin', adminRoutes);
 
 // to handle the error
 app.use(errorHandler);

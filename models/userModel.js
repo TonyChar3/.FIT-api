@@ -13,8 +13,11 @@ const userSchema = mongoose.Schema({
         type: String,
         required: [true, "Enter your password"]
     },
+    admin: {
+        type: Boolean
+    },
     wishlist: [{
-        _id:{
+        _id: {
             type: String,
             required: true
         },

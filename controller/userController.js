@@ -11,7 +11,7 @@ const registerUser = asyncHandler( async(req,res,next) => {
 
     try {
         // deconstruct the username and password from the request
-        const { username, email, password } = req.body
+        const { username, email, password, admin } = req.body
 
         // check if the user isn't already registered
         const userisRegistered = await User.findOne({ email: email });
@@ -30,6 +30,7 @@ const registerUser = asyncHandler( async(req,res,next) => {
         const user = await User.create({
             username,
             email,
+            admin,
             password: hashPasswrd,
         });
 
