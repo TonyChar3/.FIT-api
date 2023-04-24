@@ -100,5 +100,15 @@ const currentUser = asyncHandler( async(req,res,next) => {
     res.json(req.user)
 });
 
-export { registerUser, loginUser, currentUser}
+
+//@desc Logout the current user
+//@route GET /user/logout
+//@access private access
+const logoutUser = asyncHandler( async(req,res,next) => {
+    req.logout(function(err) {
+        if (err) { return next(err); }
+    });
+});
+
+export { registerUser, loginUser, currentUser, logoutUser}
 

@@ -13,7 +13,7 @@ import userRoutes from './routes/userRoutes.js';
 import errorHandler from './middleware/errorHandler.js';
 import productRoutes from './routes/productRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
-import stripe from 'stripe';
+import stripeRoutes from './routes/stripeRoutes.js';
 
 // access the .env variables
 dotenv.config();
@@ -33,15 +33,15 @@ passPort(passport);
 // initialize passport.js
 app.use(passport.initialize());
 
+// Cross-Origin Resource Sharing
+app.use(cors());
+
 // use json with express
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // to protect the headers of our request
 app.use(helmet());
-
-// Cross-Origin Resource Sharing
-app.use(cors());
 
 // routes for the user 
 app.use('/user', userRoutes);
@@ -51,6 +51,9 @@ app.use('/shop', productRoutes);
 
 // routes for admin
 app.use('/admin', adminRoutes);
+
+// routes for the payment
+app.use('/stripe', stripeRoutes);
 
 // to handle the error
 app.use(errorHandler);

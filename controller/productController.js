@@ -26,6 +26,29 @@ const allListedProducts = asyncHandler( async(req,res,next) => {
     }
 });
 
+//@desc Show a selected product
+//@route GET /shop/:id
+//@access PUBLIC
+const selectedProduct = asyncHandler( async(req,res,next) => {
+    try{
+        // deconstruct the product id from the request
+        const prodct_id = req.params.id
+
+        // find the product
+        const product = await Product.findOne({ _id: prodct_id })
+
+        if(!product){
+            res.status(404);
+            throw new Error("Product not found")
+        }else{
+            res.status(200).json(product)
+        }
+
+    } catch(err){
+        next(err)
+    }
+});
+
 //@desc Add product to the wishlist
 //@route POST /shop/addWishlist
 //@access PRIVATE
@@ -162,4 +185,4 @@ const allWishList = asyncHandler( async(req,res,next) => {
     }
 });
 
-export { allListedProducts, addToWishList, removeFromWishList, allWishList }
+export { allListedProducts, addToWishList, removeFromWishList, allWishList, selectedProduct }

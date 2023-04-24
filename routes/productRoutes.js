@@ -1,10 +1,12 @@
 import express from 'express';
 import passport from 'passport';
-import { allListedProducts, addToWishList, removeFromWishList, allWishList } from '../controller/productController.js';
+import { allListedProducts, addToWishList, removeFromWishList, allWishList, selectedProduct } from '../controller/productController.js';
 
 const router = express.Router();
 
 router.get('/product', allListedProducts);
+
+router.get('/:id', selectedProduct);
 
 router.post('/addWishlist', passport.authenticate('jwt', { session: false }), addToWishList);
 
