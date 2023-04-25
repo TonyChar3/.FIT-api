@@ -18,7 +18,7 @@ const PRIV_KEY = fs.readFileSync(pathToPrivKey, 'utf8');
 const issueJWT = (user) => {
 
     const _id = user.id;
-    console.log(user.id)
+    
     const expiresIn = '1d';
 
     const payload = {
@@ -34,4 +34,21 @@ const issueJWT = (user) => {
     }
 }
 
-export { issueJWT };
+/**
+ * Function to confirm the updated password
+ */
+const ConfirmPasswd = (p_pass1, p_pass2) => {
+
+    // compare the two password to see if they are the same
+    if(p_pass1.toString() === p_pass2.toString()){
+
+        return true
+
+    } else {
+        
+        return false
+    }
+    
+}
+
+export { issueJWT, ConfirmPasswd };

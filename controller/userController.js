@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcrypt';
 import User from '../models/userModel.js';
-import { issueJWT } from '../middleware/utilsJWT.js';
+import { issueJWT, ConfirmPasswd } from '../middleware/utilsJWT.js';
 
 
 //@desc Register a new into the DB
@@ -105,9 +105,10 @@ const currentUser = asyncHandler( async(req,res,next) => {
 //@route PUT /user/update
 //@access private
 const updateUser = asyncHandler( async(req,res,next) => {
+
     try{
         // deconstruct the values from the request.body
-        const { u_id ,u_name, u_email, u_password } = req.body;
+        const { u_id ,u_name, u_email, u_password, u_confirmPasswd } = req.body;
        
         // find the user with his email
         const user = await User.findOne({ _id: u_id })
@@ -118,22 +119,39 @@ const updateUser = asyncHandler( async(req,res,next) => {
             throw new Error("Error, unable to find user to update")
         }
 
+        // Make sure the new Password and Confirm password are the same
+        const confirmed = ConfirmPasswd(u_password, u_confirmPasswd);
+
+        if(!confirmed) {
+            res.status(400).json("Please be sure to send back the same password")
+        }
+
         const updateProfile = {};
 
         if(u_name){
 
-            updateProfile.username = u_name;
+            if(user.username !== u_name){
+                updateProfile.username = u_name;
+            }
 
         } else if(u_email){
 
-            updateProfile.email = u_email;
+            if(user.email !== u_email){
+                updateProfile.email = u_email;
+            }
 
         } else if(u_password){
 
-            // hash the password with bcrypt
-            const hashPassword = await bcrypt.hash(u_password, 10);
+            // verify if the password is the same or not
+            const verify = await bcrypt.compare(u_password, user.password)
 
-            updateProfile.password = hashPassword;
+            if(!verify){
+                // hash the password with bcrypt
+                const hashPassword = await bcrypt.hash(u_password, 10);
+
+                updateProfile.password = hashPassword;
+            }
+
         }
 
         if(Object.keys(updateProfile).length === 0){
