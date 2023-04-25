@@ -101,14 +101,67 @@ const currentUser = asyncHandler( async(req,res,next) => {
 });
 
 
-//@desc Logout the current user
-//@route GET /user/logout
-//@access private access
-const logoutUser = asyncHandler( async(req,res,next) => {
-    req.logout(function(err) {
-        if (err) { return next(err); }
-    });
+//@desc Update the user's profile
+//@route PUT /user/update
+//@access private
+const updateUser = asyncHandler( async(req,res,next) => {
+    try{
+        // deconstruct the values from the request.body
+        const { u_id ,u_name, u_email, u_password } = req.body;
+       
+        // find the user with his email
+        const user = await User.findOne({ _id: u_id })
+
+        // make sure it is found
+        if(!user){
+            res.status(500);
+            throw new Error("Error, unable to find user to update")
+        }
+
+        const updateProfile = {};
+
+        if(u_name){
+
+            updateProfile.username = u_name;
+
+        } else if(u_email){
+
+            updateProfile.email = u_email;
+
+        } else if(u_password){
+
+            // hash the password with bcrypt
+            const hashPassword = await bcrypt.hash(u_password, 10);
+
+            updateProfile.password = hashPassword;
+        }
+
+        if(Object.keys(updateProfile).length === 0){
+
+            res.status(200).json({ message: "Nothing to update"})
+
+        } else {
+
+            const update = await User.findByIdAndUpdate(
+                {_id: u_id},
+                {
+                    $set: updateProfile
+                },
+                {new:true}
+            );
+
+            if(update){
+                res.status(201).json({ msg: "Profile Updated" });
+            } else {
+                res.status(500);
+                throw new Error("Unable to update the profile using the info provided")
+            }
+        }
+
+    } catch(err){
+        next(err)
+    }
 });
 
-export { registerUser, loginUser, currentUser, logoutUser}
+export { registerUser, loginUser, currentUser, updateUser}
 

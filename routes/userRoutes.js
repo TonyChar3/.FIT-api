@@ -1,14 +1,15 @@
 import express from "express";
 import passport from 'passport';
-import { registerUser, loginUser, currentUser, logoutUser} from '../controller/userController.js';
+import { registerUser, loginUser, currentUser, updateUser} from '../controller/userController.js';
 const router = express.Router();
 
-router.get('/current', passport.authenticate('jwt', { session: false }), currentUser);
 
 router.route('/login').post(loginUser);
 
 router.route('/register').post(registerUser);
 
-router.get('/logout', logoutUser);
+router.get('/current', passport.authenticate('jwt', { session: false }), currentUser);
+
+router.put('/update', passport.authenticate('jwt', { session: false }), updateUser);
 
 export default router;
