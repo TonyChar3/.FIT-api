@@ -21,6 +21,10 @@ const userSchema = mongoose.Schema({
             type: String,
             required: true
         },
+        prodct_img: {
+            type: String,
+            required: true
+        },
         prodct_name:{
             type: String,
             required: true

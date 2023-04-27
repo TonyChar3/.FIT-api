@@ -13,7 +13,7 @@ import userRoutes from './routes/userRoutes.js';
 import errorHandler from './middleware/errorHandler.js';
 import productRoutes from './routes/productRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
-import stripeRoutes from './routes/stripeRoutes.js';
+import wishlistRoutes from './routes/wishlistRoutes.js';
 
 // access the .env variables
 dotenv.config();
@@ -33,9 +33,6 @@ passPort(passport);
 // initialize passport.js
 app.use(passport.initialize());
 
-// Cross-Origin Resource Sharing
-app.use(cors());
-
 // use json with express
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -43,17 +40,20 @@ app.use(express.urlencoded({ extended: true }));
 // to protect the headers of our request
 app.use(helmet());
 
+// Cross-Origin Resource Sharing
+app.use(cors());
+
 // routes for the user 
 app.use('/user', userRoutes);
 
 // routes for the shop
 app.use('/shop', productRoutes);
 
+// routes for the wishlist
+app.use('/wishlist', wishlistRoutes);
+
 // routes for admin
 app.use('/admin', adminRoutes);
-
-// routes for the payment
-app.use('/stripe', stripeRoutes);
 
 // to handle the error
 app.use(errorHandler);
@@ -62,15 +62,15 @@ app.use(errorHandler);
  * Secure the server with HTTPS
  */
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
-const sslServer = https.createServer({
-    key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
-    cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
-}, app);
+// const sslServer = https.createServer({
+//     key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
+//     cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
+// }, app);
 
 // start up the server
-sslServer.listen(port, () => {
+app.listen(port, () => {
     console.log(`Secured server is running on port ${port}`)
 });
