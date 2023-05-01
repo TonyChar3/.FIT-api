@@ -3,10 +3,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import passport from 'passport';
 import dotenv from 'dotenv';
-import https from 'https';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import connectDB from './config/dbConnection.js';
 import passPort from './config/passport.js';
 import userRoutes from './routes/userRoutes.js';
@@ -14,6 +10,10 @@ import errorHandler from './middleware/errorHandler.js';
 import productRoutes from './routes/productRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
+import stripe from 'stripe';
+
+const stripeInstance = stripe(process.env.STRIPE_KEY);
 
 // access the .env variables
 dotenv.config();
@@ -41,7 +41,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 
 // Cross-Origin Resource Sharing
-app.use(cors());
+app.use(cors({
+    origin: 'http://10.0.0.129:3000',
+    credentials: true
+}));
+
+// routes for anonymous users
+app.use('/', userRoutes);
 
 // routes for the user 
 app.use('/user', userRoutes);
@@ -51,6 +57,9 @@ app.use('/shop', productRoutes);
 
 // routes for the wishlist
 app.use('/wishlist', wishlistRoutes);
+
+// routes for the cart
+app.use('/cart', cartRoutes);
 
 // routes for admin
 app.use('/admin', adminRoutes);

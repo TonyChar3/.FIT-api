@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcrypt';
 import User from '../models/userModel.js';
-import { issueJWT, ConfirmPasswd } from '../middleware/utilsJWT.js';
+import { authJWT, ConfirmPasswd, randomJWT } from '../middleware/utilsJWT.js';
 
 
 //@desc Register a new into the DB
@@ -77,7 +77,9 @@ const loginUser = asyncHandler( async(req,res,next) => {
             }
 
             // generate a token
-            const tokenObject = issueJWT(user);
+            const tokenObject = authJWT(user);
+
+            console.log("exprie Object",tokenObject.expires)
 
             // success of operation message
             res.status(200).json({ success: true, user: user, token: tokenObject.token, expire: tokenObject.expires });
@@ -92,11 +94,27 @@ const loginUser = asyncHandler( async(req,res,next) => {
     }
 });
 
+//@desc Anonymous user set up
+//@route GET /fit-user
+//@access public
+const anonymousUser = asyncHandler( async(req,res,next) => {
+
+    const tokenObject = randomJWT();
+
+    if(tokenObject){
+        res.status(200).json({ success: true, token: tokenObject.token, expire: tokenObject.expires })
+    } else {
+        res.status(500);
+        throw new Error("Unable to create new acces token")
+    }
+})
+
 
 //@desc The current logged in user
 //@route GET /user/current
 //@acess private access
 const currentUser = asyncHandler( async(req,res,next) => {
+    console.log(req)
     res.json(req.user)
 });
 
@@ -181,5 +199,5 @@ const updateUser = asyncHandler( async(req,res,next) => {
     }
 });
 
-export { registerUser, loginUser, currentUser, updateUser}
+export { registerUser, loginUser, currentUser, updateUser, anonymousUser}
 

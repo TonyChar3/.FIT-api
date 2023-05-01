@@ -2,35 +2,61 @@ import jsonwebtoken from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import crypto from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const pathToPrivKey = path.join(__dirname, '../', 'id_rsa_priv.pem');
+const pathToLogInKey = path.join(__dirname, '../', 'log_in_priv.pem');
 
+const LOG_IN_KEY = fs.readFileSync(pathToLogInKey, 'utf8');
 const PRIV_KEY = fs.readFileSync(pathToPrivKey, 'utf8');
 
+const generateRandomString = (length) => {
+    console.log(`${length}`)
+    return crypto.randomBytes(Math.ceil(length/2)).toString('hex').slice(0, length);
+}
+
+/**
+ * Function to issue a random JWT token
+ */
+const randomJWT = () => {
+    const buffer = generateRandomString(32)
+
+    const payload = {
+        sub: buffer,
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + (60 * 60)
+    }
+
+    const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, { algorithm: 'RS256' });
+
+    return{
+        token: "Bearer " + signedToken,
+        expires: payload.exp
+    }
+}
 
 /**
  * Function to issue a fresh JWT Token
  */
 
-const issueJWT = (user) => {
+const authJWT = (user) => {
 
     const _id = user.id;
     
-    const expiresIn = '1d';
-
     const payload = {
         sub: _id,
-        iat: Date.now()
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60)
     };
 
-    const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, { expiresIn: expiresIn, algorithm: 'RS256' });
+    const signedToken = jsonwebtoken.sign(payload, LOG_IN_KEY, { algorithm: 'RS256' });
 
     return{
         token: "Bearer " + signedToken,
-        expires: expiresIn
+        expires: payload.exp
     }
 }
 
@@ -51,4 +77,4 @@ const ConfirmPasswd = (p_pass1, p_pass2) => {
     
 }
 
-export { issueJWT, ConfirmPasswd };
+export { authJWT, ConfirmPasswd, randomJWT };

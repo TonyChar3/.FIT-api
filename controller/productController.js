@@ -6,18 +6,20 @@ import Product from '../models/productModel.js';
 //@route GET /shop/product
 //@access PUBLIC
 const allListedProducts = asyncHandler( async(req,res,next) => {
-
+   
     try{
         // define an empty array
         let arrayProdct = [];
 
+
         // loop through the Product document for each listed products
         (await Product.find()).forEach( (doc) => {
-            
+                
             // push each of them inside the array
             arrayProdct.push(doc)
         })
 
+            
         // send back the array of objects
         res.send(arrayProdct);
 

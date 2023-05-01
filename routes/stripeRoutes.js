@@ -3,6 +3,6 @@ import { createPaymentIntent } from '../controller/stripeController.js';
 
 const router = express.Router();
 
-router.post('/create-payment-intent', createPaymentIntent);
+router.post('/create-checkout-session', createPaymentIntent);
 
 export default router;

@@ -10,7 +10,7 @@ import User from '../models/userModel.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const pathToKey = path.join(__dirname, '..', 'id_rsa_pub.pem');
+const pathToKey = path.join(__dirname, '..', 'log_in_pub.pem');
 const PUB_KEY = fs.readFileSync(pathToKey, 'utf8');
 
 
