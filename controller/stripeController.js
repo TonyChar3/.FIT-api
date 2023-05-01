@@ -1,5 +1,4 @@
 import asyncHandler from 'express-async-handler';
-import { TopologyDescription } from 'mongodb';
 import stripe from 'stripe';
 
 //@desc to create the payment intent to the stripe API

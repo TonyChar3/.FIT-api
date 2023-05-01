@@ -11,6 +11,7 @@ import productRoutes from './routes/productRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
+import stripeRoutes from './routes/stripeRoutes.js';
 import stripe from 'stripe';
 
 const stripeInstance = stripe(process.env.STRIPE_KEY);
@@ -32,6 +33,8 @@ passPort(passport);
 
 // initialize passport.js
 app.use(passport.initialize());
+
+stripeInstance
 
 // use json with express
 app.use(express.json());
@@ -60,6 +63,9 @@ app.use('/wishlist', wishlistRoutes);
 
 // routes for the cart
 app.use('/cart', cartRoutes);
+
+// routes for the stripe checkout ui
+app.use('/stripe', stripeRoutes);
 
 // routes for admin
 app.use('/admin', adminRoutes);
