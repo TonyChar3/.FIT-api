@@ -79,8 +79,6 @@ const loginUser = asyncHandler( async(req,res,next) => {
             // generate a token
             const tokenObject = authJWT(user);
 
-            console.log("exprie Object",tokenObject.expires)
-
             // success of operation message
             res.status(200).json({ success: true, user: user, token: tokenObject.token, expire: tokenObject.expires });
         } else {

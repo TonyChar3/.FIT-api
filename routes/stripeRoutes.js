@@ -1,8 +1,10 @@
-import express from 'express';
-import { createPaymentIntent } from '../controller/stripeController.js';
+import express, { json } from 'express';
+import { createPaymentIntent, paymentFulfillment } from '../controller/stripeController.js';
 
 const router = express.Router();
 
-router.post('/create-checkout-session', createPaymentIntent);
+router.post('/create-payment-intent', createPaymentIntent);
+
+router.post('/webhook', json() , paymentFulfillment);
 
 export default router;

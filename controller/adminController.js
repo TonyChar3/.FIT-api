@@ -8,7 +8,7 @@ const addNewProdct = asyncHandler( async(req,res,next) => {
 
     try{
         // deconstruct the product info from the request.body
-        const { prodct_name, prodct_descrip, prodct_price, prodct_stock } = req.body
+        const { prodct_name, prodct_descrip, prodct_price, prodct_stock, prodct_stripe } = req.body
 
         // check if the product isn't already listed in the Db
         const isListed = await Product.findOne({ name: prodct_name });
@@ -25,6 +25,7 @@ const addNewProdct = asyncHandler( async(req,res,next) => {
         const product = await Product.create({
             name: prodct_name,
             description: prodct_descrip,
+            stripe_ID: prodct_stripe,
             prix: prodct_price,
             stock: prodct_stock,
         })

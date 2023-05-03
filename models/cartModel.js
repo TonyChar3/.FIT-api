@@ -23,6 +23,10 @@ const CartModel = mongoose.Schema({
             type: Number,
             required: true
         },
+        stripe_ID: {
+            type: String,
+            required: true
+        },
         price: {
             type: String,
             required: true

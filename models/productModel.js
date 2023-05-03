@@ -13,6 +13,10 @@ const productSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    stripe_ID: {
+        type: String,
+        required: true
+    },
     stock: {
         type: Number,
         required: true

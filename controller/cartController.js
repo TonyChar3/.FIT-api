@@ -99,6 +99,7 @@ const customerAddItem = asyncHandler( async(req,res,next) => {
                 _id: prodct_id,
                 img: product.images[0].img_url,
                 name: product.name,
+                stripe_ID: product.stripe_ID,
                 qty: prodct_qty,
                 price: product.prix
             }
