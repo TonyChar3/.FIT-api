@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
-import bcrypt from 'bcrypt';
+import { createOrder, clearCartData } from '../middleware/stripeOrder.js';
 
 
 dotenv.config()
@@ -15,19 +15,14 @@ const createPaymentIntent = asyncHandler( async(req,res,next) => {
         
         const { items, userID } = req.body
 
-        const hashedToken = await bcrypt.hash(userID, 10)
-
-        console.log(hashedToken)
-
         const StripeCustomer = await stripe.customers.create({
             metadata:{
-                userId: hashedToken.toString(),
+                userId: userID.toString(),
                 cart: JSON.stringify(items)
-                
             }
         });
 
-        console.log('Custromer', items)
+
 
         const line_items = items.map((prodct) => {
            return{
@@ -47,9 +42,53 @@ const createPaymentIntent = asyncHandler( async(req,res,next) => {
             customer_update: {
                 address: 'auto',
                 shipping: 'auto'
-            }
+            },
+            shipping_address_collection: {
+                allowed_countries: ['US', 'CA']
+            },
+            shipping_options: [
+                {
+                  shipping_rate_data: {
+                    type: 'fixed_amount',
+                    fixed_amount: {
+                      amount: 0,
+                      currency: 'cad',
+                    },
+                    display_name: 'Free shipping',
+                    delivery_estimate: {
+                      minimum: {
+                        unit: 'business_day',
+                        value: 5,
+                      },
+                      maximum: {
+                        unit: 'business_day',
+                        value: 7,
+                      },
+                    },
+                  },
+                },
+                {
+                  shipping_rate_data: {
+                    type: 'fixed_amount',
+                    fixed_amount: {
+                      amount: 1500,
+                      currency: 'cad',
+                    },
+                    display_name: 'Next day air',
+                    delivery_estimate: {
+                      minimum: {
+                        unit: 'business_day',
+                        value: 1,
+                      },
+                      maximum: {
+                        unit: 'business_day',
+                        value: 1,
+                      },
+                    },
+                  },
+                },
+              ],
         });
-        console.log('Session', session)
         res.send({ url: session.url })
 
     } catch(err){
@@ -62,43 +101,32 @@ const createPaymentIntent = asyncHandler( async(req,res,next) => {
 //@acess PUBLIC
 const paymentFulfillment = asyncHandler( async(req,res,next) => {
 
-    // const endpointSecret = process.env.STRIPE_ENDPOINT
-    let endpointSecret;
-
+    const endpointSecret = process.env.STRIPE_ENDPOINT
     const sig = req.headers['stripe-signature'];
 
     let data;
     let eventType;
 
-    
-
-    if(endpointSecret){
-
-        let event;
-        try {
-            event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-            console.log('Webhook success')
-        } catch (err) {
-            console.log('Webhook error')
-            res.status(400).send(`Webhook Error: ${err.message}`);
-            return;
-        }
-
-        data = event.data.object;
-        eventType = event.type;
-    } else {
-        data =req.body.data;
-        eventType = req.body.type
+    let event;
+    try {
+        event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
+        console.log('Webhook success')
+    } catch (err) {
+        console.log(err)
+        res.status(400).send(`Webhook Error: ${err.message}`);
+        return;
     }
-  
 
+    data = event.data.object;
+    eventType = event.type;
   
     // Handle the event
     if(eventType === 'checkout.session.completed'){
-        stripe.customers.retrieve(data.object.customer).then(
+        stripe.customers.retrieve(data.customer).then(
             (customer) => {
-                console.log(customer);
-                console.log("data", data)
+                createOrder(customer, data)
+                // clear the users cart
+                clearCartData(customer.metadata.userId)
             }
         ).catch(err => console.log(err.message))
     }

@@ -9,25 +9,39 @@ import Product from '../models/productModel.js';
 //@access PUBLIC
 const customerCart = asyncHandler( async(req,res,next) => {
     try{
-        // deconstruct the token being sent over in the request
-        const bearerHeader = req.headers['authorization'];
+        // deconstruct the hash and token from the body
+        const { hash, userId } = req.body;
 
-        // Use only the token part of the Bearer
-        const token = bearerHeader && bearerHeader.split(' ')[1];
+        console.log(req.body)
 
+        let cartID;
+        console.log(userId)
+        console.log(hash)
+        // If the hash is not empty and userID is empty -> compare it with the token to make sure it is valid
+        if(hash && !userId._id){
+            //  and use the hash as a cart ID
+            cartID = hash
+            
+        // If it is empty but userID is not empty -> try to find the user id in the user DB
+        } else if(!hash && userId._id){
+
+            //  and use the id as a cart ID
+            cartID = userId._id
+        }
+        console.log("line 29",cartID)
         // find a cart using this token as the id
-        const cart = await Cart.findOne({ _id: token })
+        const cart = await Cart.findOne({ _id: cartID })
 
         // If not found...create a new cart in the DB
         if(!cart){
             // create a new cart in the DB
             const newCart = await Cart.create({
-                _id: token
+                _id: cartID
             })
 
             if(newCart){
                 // send back its empty value to the frontend
-                const cart = await Cart.findOne({ _id: token });
+                const cart = await Cart.findOne({ _id: cartID });
 
                 res.send(cart)
             } else {
@@ -48,7 +62,7 @@ const customerCart = asyncHandler( async(req,res,next) => {
     } catch(err){
         console.log(err);
     }
-    res.send({ msg: "here's all the articles of your cart"})
+    res.send({ msg: "here's all the articles of your cart" })
 });
 
 //@desc add item to the cart
@@ -58,16 +72,10 @@ const customerAddItem = asyncHandler( async(req,res,next) => {
 
     try{
         // deconstruct the product properties
-        const { prodct_id, prodct_qty} = req.body;
-
-        // deconstruct the token being sent over in the request
-        const bearerHeader = req.headers['authorization'];
-
-        // Use only the token part of the Bearer
-        const token = bearerHeader && bearerHeader.split(' ')[1];
+        const { cartID, prodct_id, prodct_qty} = req.body;
 
         // find the customer cart inside the db
-        const cart = await Cart.findOne({ _id: token });
+        const cart = await Cart.findOne({ _id: cartID });
 
         if(!cart){
             res.status(500);
@@ -132,16 +140,10 @@ const customerRemoveItem = asyncHandler( async(req,res,next) => {
 
     try{
         // deconstruct the product properties
-        const { prodct_id } = req.body;
-
-        // deconstruct the token being sent over in the request
-        const bearerHeader = req.headers['authorization'];
-        
-        // Use only the token part of the Bearer
-        const token = bearerHeader && bearerHeader.split(' ')[1];
+        const { cartID, prodct_id } = req.body;
 
         // find the cart
-        const cart = await Cart.findOne({ _id: token })
+        const cart = await Cart.findOne({ _id: cartID })
 
         if(!cart){
             res.status(404);

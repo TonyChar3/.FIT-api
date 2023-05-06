@@ -6,7 +6,7 @@ import { verfiyToken } from '../middleware/tokenValid.js';
 
 const router = express.Router();
 
-router.get('/items',verfiyToken, customerCart);
+router.post('/items',verfiyToken, customerCart);
 
 router.put('/add-to-cart', customerAddItem);
 

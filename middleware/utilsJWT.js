@@ -13,19 +13,13 @@ const pathToLogInKey = path.join(__dirname, '../', 'log_in_priv.pem');
 const LOG_IN_KEY = fs.readFileSync(pathToLogInKey, 'utf8');
 const PRIV_KEY = fs.readFileSync(pathToPrivKey, 'utf8');
 
-const generateRandomString = (length) => {
-    console.log(`${length}`)
-    return crypto.randomBytes(Math.ceil(length/2)).toString('hex').slice(0, length);
-}
-
 /**
  * Function to issue a random JWT token
  */
 const randomJWT = () => {
-    const buffer = generateRandomString(32)
 
     const payload = {
-        sub: buffer,
+        sub: "customer",
         iat: Math.floor(Date.now() / 1000),
         exp: Math.floor(Date.now() / 1000) + (60 * 60)
     }

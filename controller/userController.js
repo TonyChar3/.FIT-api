@@ -99,8 +99,10 @@ const anonymousUser = asyncHandler( async(req,res,next) => {
 
     const tokenObject = randomJWT();
 
-    if(tokenObject){
-        res.status(200).json({ success: true, token: tokenObject.token, expire: tokenObject.expires })
+    const hashToken = await bcrypt.hash(tokenObject.token, 10);
+
+    if(hashToken){
+        res.status(200).json({ success: true, token: tokenObject.token, hashToken: hashToken, expire: tokenObject.expires })
     } else {
         res.status(500);
         throw new Error("Unable to create new acces token")
