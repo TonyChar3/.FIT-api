@@ -36,21 +36,20 @@ const registerUser = asyncHandler( async(req,res,next) => {
 
         // check if the user was successfully registered
         if(user){
-            res.status(201).json({ _id: user.id, email: email})
+            res.status(201).json({ _id: user.id, email: email, message: "You are now registered!"})
         } else {
             res.status(400);
             throw new Error("User credentials not valid")
         }
 
         // respond with success message using json
-        res.json({ msg: "User registered" })
+        res.json({ message: "User registered" })
 
     } catch(err){
         next(err)
     }
 
 });
-
 
 //@desc Login the user
 //@route POST /user/login
@@ -80,7 +79,7 @@ const loginUser = asyncHandler( async(req,res,next) => {
             const tokenObject = authJWT(user);
 
             // success of operation message
-            res.status(200).json({ success: true, user: user, token: tokenObject.token, expire: tokenObject.expires });
+            res.status(200).json({ success: true, message:"Welcome back!", user: user, token: tokenObject.token, expire: tokenObject.expires });
         } else {
             // set the status
             res.status(401);
@@ -109,7 +108,6 @@ const anonymousUser = asyncHandler( async(req,res,next) => {
     }
 })
 
-
 //@desc The current logged in user
 //@route GET /user/current
 //@acess private access
@@ -117,7 +115,6 @@ const currentUser = asyncHandler( async(req,res,next) => {
     console.log(req)
     res.json(req.user)
 });
-
 
 //@desc Update the user's profile
 //@route PUT /user/update

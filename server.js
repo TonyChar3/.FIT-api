@@ -45,14 +45,14 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true }));
 
-// to protect the headers of our request
-app.use(helmet());
-
 // Cross-Origin Resource Sharing
 app.use(cors({
     origin: 'http://10.0.0.129:3000',
     credentials: true
 }));
+
+// to protect the headers of our request
+app.use(helmet());
 
 // routes for anonymous users
 app.use('/', userRoutes);
@@ -77,18 +77,6 @@ app.use('/admin', adminRoutes);
 
 // to handle the error
 app.use(errorHandler);
-
-/**
- * Secure the server with HTTPS
- */
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-
-// const sslServer = https.createServer({
-//     key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
-//     cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
-// }, app);
 
 // start up the server
 app.listen(port, () => {

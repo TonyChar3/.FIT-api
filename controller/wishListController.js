@@ -34,7 +34,7 @@ const addToWishList = asyncHandler( async(req,res,next) => {
 
         // if the product is already added
         if(isAdded !== -1){
-            res.status(200).json({ message: "This product is already added to your wishlist"});
+            res.status(200).json({ message: "already added to your wishlist"});
         } else {
          
             // Create a new wishlist object
@@ -56,7 +56,7 @@ const addToWishList = asyncHandler( async(req,res,next) => {
 
             // generate a success or failure message
             if(addNewWish){
-                res.status(201).json({ message: `${product.name} added to the wishlist`})
+                res.status(201).json({ message: 'added to the wishlist' })
             } else {
                 res.status(500);
                 throw new Error("Unable to add this product to the wishlist, please try again")

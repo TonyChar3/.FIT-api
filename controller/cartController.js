@@ -1,6 +1,5 @@
 import asyncHandler from 'express-async-handler';
 import Cart from '../models/cartModel.js';
-import User from '../models/userModel.js';
 import Product from '../models/productModel.js';
 
 
@@ -12,11 +11,8 @@ const customerCart = asyncHandler( async(req,res,next) => {
         // deconstruct the hash and token from the body
         const { hash, userId } = req.body;
 
-        console.log(req.body)
-
         let cartID;
-        console.log(userId)
-        console.log(hash)
+
         // If the hash is not empty and userID is empty -> compare it with the token to make sure it is valid
         if(hash && !userId._id){
             //  and use the hash as a cart ID
@@ -28,7 +24,7 @@ const customerCart = asyncHandler( async(req,res,next) => {
             //  and use the id as a cart ID
             cartID = userId._id
         }
-        console.log("line 29",cartID)
+        
         // find a cart using this token as the id
         const cart = await Cart.findOne({ _id: cartID })
 
@@ -160,7 +156,7 @@ const customerRemoveItem = asyncHandler( async(req,res,next) => {
             await cart.save();
 
             if(deleted){
-                res.json({ msg: "Item removed"})
+                res.json({ message: "Item removed"})
             } else{
                 res.status(500);
                 throw new Error("Unable to remove the item from the cart")
@@ -183,16 +179,10 @@ const modifyItem = asyncHandler( async(req,res,next) => {
 
     try{
         // deconstruct the product properties
-        const { prodct_id, modif_action } = req.body;
-
-        // deconstruct the token being sent over in the request
-        const bearerHeader = req.headers['authorization'];
-        
-        // Use only the token part of the Bearer
-        const token = bearerHeader && bearerHeader.split(' ')[1];
+        const { cartID, prodct_id, modif_action } = req.body;
 
         // find the cart
-        const cart = await Cart.findOne({ _id: token })
+        const cart = await Cart.findOne({ _id: cartID })
 
         if(!cart){
             res.status(404);
@@ -216,13 +206,13 @@ const modifyItem = asyncHandler( async(req,res,next) => {
                             cart.products.splice(cartItem,1)
 
                             await cart.save();
-                            res.json({ msg: "Quantity decreased"})
+                            res.json({ message: "Quantity decreased"})
                             break;
                         }
 
                         await cart.save()
 
-                        res.json({ msg: "Quantity decreased"})
+                        res.json({ message: "Quantity decreased"})
                         break;
                     }
 
@@ -232,7 +222,7 @@ const modifyItem = asyncHandler( async(req,res,next) => {
 
                         await cart.save();
 
-                        res.json({ msg: "Quantity increase"})
+                        res.json({ message: "Quantity increased"})
                         break;
                     }
 

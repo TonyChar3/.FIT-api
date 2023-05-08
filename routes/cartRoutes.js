@@ -1,6 +1,5 @@
 import express from 'express';
 import { customerAddItem, customerCart, customerRemoveItem, modifyItem } from '../controller/cartController.js';
-import passport from 'passport';
 import { verfiyToken } from '../middleware/tokenValid.js';
 
 

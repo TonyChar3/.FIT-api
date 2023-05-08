@@ -22,8 +22,6 @@ const createPaymentIntent = asyncHandler( async(req,res,next) => {
             }
         });
 
-
-
         const line_items = items.map((prodct) => {
            return{
             price: prodct.stripe_ID,
@@ -110,9 +108,9 @@ const paymentFulfillment = asyncHandler( async(req,res,next) => {
     let event;
     try {
         event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
-        console.log('Webhook success')
+        
     } catch (err) {
-        console.log(err)
+        
         res.status(400).send(`Webhook Error: ${err.message}`);
         return;
     }
