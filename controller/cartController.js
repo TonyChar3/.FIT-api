@@ -10,55 +10,50 @@ const customerCart = asyncHandler( async(req,res,next) => {
     try{
         // deconstruct the hash and token from the body
         const { hash, userId } = req.body;
-
+        // the cart ID variable
         let cartID;
 
         // If the hash is not empty and userID is empty -> compare it with the token to make sure it is valid
         if(hash && !userId._id){
             //  and use the hash as a cart ID
             cartID = hash
-            
+        
         // If it is empty but userID is not empty -> try to find the user id in the user DB
         } else if(!hash && userId._id){
-
             //  and use the id as a cart ID
             cartID = userId._id
         }
         
-        // find a cart using this token as the id
-        const cart = await Cart.findOne({ _id: cartID })
+        if(cartID){
+            // find a cart using this token as the id
+            const cart = await Cart.findOne({ _id: cartID })
 
-        // If not found...create a new cart in the DB
-        if(!cart){
-            // create a new cart in the DB
-            const newCart = await Cart.create({
-                _id: cartID
-            })
+            // If not found...create a new cart in the DB
+            if(!cart){
+                // create a new cart in the DB
+                const newCart = await Cart.create({
+                    _id: cartID
+                })
 
-            if(newCart){
-                // send back its empty value to the frontend
-                const cart = await Cart.findOne({ _id: cartID });
-
-                res.send(cart)
-            } else {
-                res.status(500);
-                throw new Error("Server unable to create a new Cart for the customer")
+                if(newCart){
+                    // send back its empty value to the frontend
+                    const cart = await Cart.findOne({ _id: cartID });
+                    
+                    if(cart){
+                        res.status(200).send(cart)
+                    }
+                } else {
+                    res.status(500);
+                    throw new Error("Server unable to create a new Cart for the customer")
+                }
+            } else if(cart){
+                res.send(cart.products);
             }
-        } else if(cart){
-            // If found... send back its object to the frontend
-            let cartArray = [];
-
-            cart.products.forEach((items) => {
-                cartArray.push(items)
-            })
-
-            res.send(cartArray);
         }
 
     } catch(err){
-        console.log(err);
+        next(err);
     }
-    res.send({ msg: "here's all the articles of your cart" })
 });
 
 //@desc add item to the cart
@@ -69,7 +64,6 @@ const customerAddItem = asyncHandler( async(req,res,next) => {
     try{
         // deconstruct the product properties
         const { cartID, prodct_id, prodct_qty} = req.body;
-
         // find the customer cart inside the db
         const cart = await Cart.findOne({ _id: cartID });
 
@@ -95,7 +89,7 @@ const customerAddItem = asyncHandler( async(req,res,next) => {
 
             await cart.save();
 
-            res.send({ msg: "Qty updated"})
+            res.send({ message: "Qty updated"})
 
         } else {
 
@@ -117,7 +111,7 @@ const customerAddItem = asyncHandler( async(req,res,next) => {
             await cart.save();
 
             if(addNewItem){
-                res.json({ msg: "Item added to the cart"})
+                res.json({ message: "Item added to the cart"})
             } else {
                 res.status(500);
                 throw new Error("Unable to add this item to the cart")

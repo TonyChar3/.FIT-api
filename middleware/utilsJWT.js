@@ -57,7 +57,6 @@ const authJWT = (user) => {
  * Function to confirm the updated password
  */
 const ConfirmPasswd = (p_pass1, p_pass2) => {
-
     // compare the two password to see if they are the same
     if(p_pass1.toString() === p_pass2.toString()){
 
@@ -67,7 +66,6 @@ const ConfirmPasswd = (p_pass1, p_pass2) => {
         
         return false
     }
-    
 }
 
 export { authJWT, ConfirmPasswd, randomJWT };

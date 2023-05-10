@@ -87,16 +87,15 @@ const addNewImg = asyncHandler( async(req,res,next) => {
         const { img_link, prodct_id } = req.body
         // find the product with the id of the product
         const findProdct = await Product.findOne({ _id: prodct_id });
-
+        
         // make sure it is found
         if(!findProdct){
             res.status(404);
             throw new Error("The requested product does not exist")
         }
-        
+
         // look into the image array to see if the image isn't already added
         const isAdded = findProdct.images.findIndex(img => img.img_url.toString() === img_link.toString());
-
         // if the image is already added, throw a new error
         if(isAdded !== -1){
             res.status(401);
@@ -104,7 +103,6 @@ const addNewImg = asyncHandler( async(req,res,next) => {
         } else {
             // flage to check if the random id number is valid or not
             const img_flag = false;
-           
             // variable for the id
             let random_id;
 
@@ -112,16 +110,13 @@ const addNewImg = asyncHandler( async(req,res,next) => {
             do {
                 // Generate a random id
                 random_id = Math.floor(Math.random() * 10000)
-
                 // make sure it is unique
                 const idDuplicate = findProdct.images.findIndex(img => img._id.toString() === random_id.toString());
 
                 // if it is not unique...
                 if(idDuplicate !== -1){
-
                     // set the flag to true to loop on more time
                     img_flag = true;
-
                 // if it is unique...
                 } else if(idDuplicate === -1){
                     break;
@@ -133,14 +128,12 @@ const addNewImg = asyncHandler( async(req,res,next) => {
                 _id: random_id,
                 img_url: img_link
             }
-
             // add it to the array
             const addNewImg = await findProdct.updateOne({
                 $push: {
                     images: newImg
                 }
             })
-
             // generate a success or failure message
             if(addNewImg){
                 res.status(201).json({ message: `New image added for ${findProdct.name}`})
@@ -149,7 +142,6 @@ const addNewImg = asyncHandler( async(req,res,next) => {
                 throw new Error("Unable to add new Image for the product, please try again")
             }
         }
-
     } catch(err){
         next(err)
     }

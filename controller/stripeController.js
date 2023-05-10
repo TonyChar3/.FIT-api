@@ -3,32 +3,30 @@ import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import { createOrder, clearCartData } from '../middleware/stripeOrder.js';
 
-
 dotenv.config()
 
 const stripe = Stripe(process.env.SECRET_STRIPE);
 
 //@desc to create the payment intent to the stripe API
 const createPaymentIntent = asyncHandler( async(req,res,next) => {
-
     try{
-        
+        // deconstruct the items and the customer ID from the request.body
         const { items, userID } = req.body
-
+        // create a Stripe customer
         const StripeCustomer = await stripe.customers.create({
             metadata:{
                 userId: userID.toString(),
                 cart: JSON.stringify(items)
             }
         });
-
+        // Make an array of the products that were sent
         const line_items = items.map((prodct) => {
            return{
             price: prodct.stripe_ID,
             quantity: prodct.qty,
            }  
         })
-        
+        // create the checkout session with the Stripe API
         const session = await stripe.checkout.sessions.create({
             customer: StripeCustomer.id,
             line_items: line_items,
@@ -87,10 +85,10 @@ const createPaymentIntent = asyncHandler( async(req,res,next) => {
                 },
               ],
         });
+        // Send back the checkout UI url
         res.send({ url: session.url })
-
     } catch(err){
-        console.log(err)
+        next(err)
     }
 });
  
@@ -98,19 +96,20 @@ const createPaymentIntent = asyncHandler( async(req,res,next) => {
 //@route POST /stripe/webhook
 //@acess PUBLIC
 const paymentFulfillment = asyncHandler( async(req,res,next) => {
-
+  /**
+   * This function is handle the webhook to fulfill the order after checkout.
+   * -> This will clear the cart and create a new order in the DB
+   */
     const endpointSecret = process.env.STRIPE_ENDPOINT
     const sig = req.headers['stripe-signature'];
 
     let data;
     let eventType;
-
     let event;
+
     try {
         event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
-        
     } catch (err) {
-        
         res.status(400).send(`Webhook Error: ${err.message}`);
         return;
     }
@@ -128,7 +127,6 @@ const paymentFulfillment = asyncHandler( async(req,res,next) => {
             }
         ).catch(err => console.log(err.message))
     }
-  
     // Return a 200 response to acknowledge receipt of the event
     res.send().end();
   });

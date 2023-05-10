@@ -8,10 +8,8 @@ import Cart from '../models/cartModel.js';
  */
 
 const createOrder = async(customer, data) => {
-
     try{
         const cartitems = JSON.parse(customer.metadata.cart)
-
         const newOrder = await Order.create({
             userId: customer.metadata.userId,
             stripeUID: data.customer,
@@ -22,38 +20,33 @@ const createOrder = async(customer, data) => {
             shipping: data.customer_details,
             payment_status: data.payment_status
         });
-
         if(newOrder){
-            console.log('process order', newOrder)
+            console.log('Order processed successfully')
         } else {
             res.status(500);
-            throw new Error("Unable to create a new order")
+            throw new Error("Unable to create a new order");
         }               
     } catch(err){
-        console.log(err)
+        console.log('Stripe Order error:',err)
     }
-
 }
+
 
 /**
  * Function to clear of the user's cart data
  *
  */
-
 const clearCartData = async(cartID) => {
     try{
         // find the cart
         const cart = await Cart.findOne({ _id: cartID })
-
         if(!cart){
             return;
         }
-
         // clear all the data inside
         cart.products = [];
-
+        // save the updated data
         await cart.save();
-
     } catch(err){
         console.log(err)
     }

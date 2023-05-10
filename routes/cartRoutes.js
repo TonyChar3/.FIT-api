@@ -2,7 +2,6 @@ import express from 'express';
 import { customerAddItem, customerCart, customerRemoveItem, modifyItem } from '../controller/cartController.js';
 import { verfiyToken } from '../middleware/tokenValid.js';
 
-
 const router = express.Router();
 
 router.post('/items',verfiyToken, customerCart);

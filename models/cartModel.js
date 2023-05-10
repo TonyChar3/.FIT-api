@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 const CartModel = mongoose.Schema({
-
     _id: {
         type: String,
         required: true

@@ -13,7 +13,6 @@ import wishlistRoutes from './routes/wishlistRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import stripeRoutes from './routes/stripeRoutes.js';
 import stripe from 'stripe';
-
 const stripeInstance = stripe(process.env.STRIPE_KEY);
 
 // access the .env variables
@@ -34,6 +33,7 @@ passPort(passport);
 // initialize passport.js
 app.use(passport.initialize());
 
+// initialize stripe checkout
 stripeInstance
 
 // use json with express
@@ -43,6 +43,7 @@ app.use(express.json({
       req.rawBody = buf.toString();
     }
 }));
+
 app.use(express.urlencoded({ extended: true }));
 
 // Cross-Origin Resource Sharing

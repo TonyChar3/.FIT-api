@@ -1,8 +1,8 @@
 import express from "express";
 import passport from 'passport';
 import { registerUser, loginUser, currentUser, updateUser, anonymousUser} from '../controller/userController.js';
-const router = express.Router();
 
+const router = express.Router();
 
 router.route('/login').post(loginUser);
 
