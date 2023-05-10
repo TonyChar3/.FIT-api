@@ -1,7 +1,7 @@
 .env
 /node_modules
 generateKeypair.js
-id_rsa_priv.pem
-id_rsa_pub.pem
 log_in_priv.pem
 log_in_pub.pem
+id_rsa_priv.pem
+id_rsa_pub.pem
