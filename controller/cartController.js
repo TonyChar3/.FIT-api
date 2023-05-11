@@ -10,6 +10,8 @@ const customerCart = asyncHandler( async(req,res,next) => {
     try{
         // deconstruct the hash and token from the body
         const { hash, userId } = req.body;
+        // separate the Bearer and the token parts
+        const tokenParts = req.headers.authorization.split(" ")
         // the cart ID variable
         let cartID;
 
@@ -30,9 +32,11 @@ const customerCart = asyncHandler( async(req,res,next) => {
 
             // If not found...create a new cart in the DB
             if(!cart){
+
                 // create a new cart in the DB
                 const newCart = await Cart.create({
-                    _id: cartID
+                    _id: cartID,
+                    jwt: tokenParts[1]
                 })
 
                 if(newCart){

@@ -11,6 +11,7 @@ import productRoutes from './routes/productRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
+import { verifyExpiredCartDB } from './middleware/cartVerifier.js';
 import stripeRoutes from './routes/stripeRoutes.js';
 import stripe from 'stripe';
 const stripeInstance = stripe(process.env.STRIPE_KEY);
@@ -78,6 +79,18 @@ app.use('/admin', adminRoutes);
 
 // to handle the error
 app.use(errorHandler);
+
+// function to clear the cart DB of expired carts
+setInterval(
+    (async () => {
+        try{
+            await verifyExpiredCartDB();
+        } catch(error) {
+            console.log(error)
+        }
+    }),
+    24 * 60 * 60 * 1000
+);
 
 // start up the server
 app.listen(port, () => {

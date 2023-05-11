@@ -62,4 +62,28 @@ const verfiyToken = (req,res,next) => {
     }
 }
 
-export { verfiyToken }
+const verifyCartToken = (token) => {
+    if(token.match(/\S+\.\S+\.\S+/) !== null) {
+        try{
+            const options = {
+                algorithm: 'RS256'
+            }
+            // verify using jsonwebtoken
+            const verif = jsonwebtoken.verify(token, RANDOM_PUB_KEY, options);
+            if(verif){
+                return true
+            } 
+
+        } catch(err){
+            if (err instanceof jsonwebtoken.JsonWebTokenError || err instanceof jsonwebtoken.NotBeforeError){
+                return false
+            } else {
+                next(err)
+            }
+        }
+    } else {
+        console.log("invalid token in the cart DB")
+    }
+}
+
+export { verfiyToken, verifyCartToken }

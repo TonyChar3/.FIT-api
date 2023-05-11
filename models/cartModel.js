@@ -5,6 +5,9 @@ const CartModel = mongoose.Schema({
         type: String,
         required: true
     },
+    jwt: {
+        type: String
+    },
     products: [{
         _id: {
             type: String,
