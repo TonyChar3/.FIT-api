@@ -16,7 +16,7 @@ import { verifyExpiredCartDB } from './utils/manageCart.js';
 import passport_setup from './config/passport.js';
 import redis from 'redis';
 import connectRedis from 'connect-redis';
-const RedisSession = connectRedis(session);
+const RedisSession = new connectRedis(session);
 import stripeRoutes from './routes/stripeRoutes.js';
 import stripe from 'stripe';
 const stripeInstance = stripe(process.env.STRIPE_KEY);
