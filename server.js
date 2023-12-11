@@ -56,7 +56,7 @@ const redis_session_store = redis.createClient({
     legacyMode:true
 })
 // connect the session store
-redis_session_store.connect.catch((err) => {
+redis_session_store.connect().catch(err => {
     console.log('Redis session store ERROR: ', err)
 });
 // use the express framework
