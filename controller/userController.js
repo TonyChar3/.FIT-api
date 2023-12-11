@@ -138,6 +138,7 @@ const anonymousUser = asyncHandler( async(req,res,next) => {
         // separate the Bearer and the token parts
         const verification = await verifyToken(req.headers.cookie);
         // get the hash from the cookie header
+        console.log(req)
         const fit_customer_hash = req.headers.cookie.split(';').find((cookie) => cookie.startsWith('fit-hash='));
         const fit_customer_token = req.headers.cookie.split(';').find((cookie) => cookie.startsWith('fit-customer='));
         if(fit_customer_hash === undefined || fit_customer_token === undefined || verification.error){
