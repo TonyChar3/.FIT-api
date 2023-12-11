@@ -56,10 +56,7 @@ const redis_session_store = redis.createClient({
     legacyMode:true
 })
 // connect the session store
-redis_session_store.connect().then(() => {
-    console.log('Redis session store is connected');
-})
-.catch((err) => {
+redis_session_store.connect.catch((err) => {
     console.log('Redis session store ERROR: ', err)
 });
 // use the express framework
@@ -92,7 +89,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // Cross-Origin Resource Sharing
 app.use(cors({
-    origin: ['http://127.0.0.1:3000', 'http://10.0.0.78:3001', 'http://localhost:3000'],
+    origin: 'http://localhost:3000',
     credentials: true
 }));
 // to protect the headers of our request
