@@ -52,8 +52,7 @@ const redis_wishlist_storage = redis.createClient({
 // redis session storage
 const redis_session_store = redis.createClient({
     url: process.env.REDIS_URL_CONNECT,
-    database: 6,
-    legacyMode:true
+    database: 6
 })
 // connect the session store
 redis_session_store.connect().catch(err => {
