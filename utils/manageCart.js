@@ -1,5 +1,9 @@
 import Cart from '../models/cartModel.js';
-import { verifyCartToken } from './tokenValid.js';
+import { verifyCartToken } from '../middleware/utilsJWT.js';
+
+/**
+ * Functions for the cart job
+ */
 
 /**
  * Function to keep the cart collection clean of random customers cart
@@ -11,12 +15,12 @@ const verifyExpiredCartDB = async() => {
 
         if(carts){
             for (const cart of carts){
-                const { jwt: cartJwt, _id: cartID } = cart;
-
-                const verified = verifyCartToken(cartJwt)
-
-                if(!verified){
-                    await Cart.findByIdAndDelete(cartID);
+                const { _id, jwt } = cart;
+                if(jwt){
+                    const verified = verifyCartToken(jwt)
+                    if(!verified){
+                        await Cart.findByIdAndDelete(_id);
+                    }
                 }
             }
         }

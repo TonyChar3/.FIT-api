@@ -1,5 +1,9 @@
 import Constant from '../constans.js';
 
+/**
+ * Error Handling middleware
+ */
+
 const errorHandler = (err, req, res, next) => {
      const statusCode = res.statusCode ? res.statusCode : 50;
 

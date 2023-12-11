@@ -1,6 +1,10 @@
 import asyncHandler from 'express-async-handler';
 import Product from '../models/productModel.js';
 
+/**
+ * Routes made for a possible admin panel...
+ */
+
 //@desc List a new product
 //@route POST /admin/addProdct
 //@acess PRIVATE + admin rights

@@ -1,17 +1,16 @@
 import express from 'express';
-import passport from 'passport';
-import { isAdmin } from '../middleware/adminHandler.js';
+import { isAdmin } from '../middleware/utilsAuth.js';
 import { addNewProdct, addNewImg, removeProdct } from '../controller/adminController.js';
 
 const router = express.Router();
 
-router.use(passport.authenticate('jwt', { session: false }))
+router.use(isAdmin);
 
-router.post('/addProdct', isAdmin, addNewProdct);
+router.post('/add-new-product', addNewProdct);
 
-router.post('/addProdctImg', isAdmin, addNewImg);
+router.post('/add-product-img', addNewImg);
 
-router.delete('/removProdct', isAdmin, removeProdct);
+router.delete('/delete-product', removeProdct);
 
 
 export default router;

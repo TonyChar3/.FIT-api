@@ -7,65 +7,71 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const pathToPrivKey = path.join(__dirname, '../', 'id_rsa_priv.pem');
-const pathToLogInKey = path.join(__dirname, '../', 'log_in_priv.pem');
 
-const LOG_IN_KEY = fs.readFileSync(pathToLogInKey, 'utf8');
 const PRIV_KEY = fs.readFileSync(pathToPrivKey, 'utf8');
+const RANDOM_PUB_KEY = fs.readFileSync(pathToPrivKey, 'utf8');
+
+/**
+ * Verification + JWT issuer middleware
+ */
 
 /**
  * Function to issue a random JWT token
  */
 const randomJWT = () => {
-
     const payload = {
         sub: "customer",
         iat: Math.floor(Date.now() / 1000),
         exp: Math.floor(Date.now() / 1000) + (60 * 60)
     }
-
     const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, { algorithm: 'RS256' });
-
     return{
-        token: "Bearer " + signedToken,
+        token: signedToken,
         expires: payload.exp
     }
 }
 
 /**
- * Function to issue a fresh JWT Token
+ * Verify the JWT token
  */
-
-const authJWT = (user) => {
-
-    const _id = user.id;
-    
-    const payload = {
-        sub: _id,
-        iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60)
-    };
-
-    const signedToken = jsonwebtoken.sign(payload, LOG_IN_KEY, { algorithm: 'RS256' });
-
-    return{
-        token: "Bearer " + signedToken,
-        expires: payload.exp
-    }
-}
-
-/**
- * Function to confirm the updated password
- */
-const ConfirmPasswd = (p_pass1, p_pass2) => {
-    // compare the two password to see if they are the same
-    if(p_pass1.toString() === p_pass2.toString()){
-
+const verifyToken = async(token) => {
+    try{
+        const fit_customer_cookie = token.split('; ').find((cookie) => cookie.startsWith('fit-customer='))
+        jsonwebtoken.verify(fit_customer_cookie.split('=')[1], PRIV_KEY);
         return true
-
-    } else {
-        
-        return false
+    } catch(err){
+        return {
+            error: true,
+            error_msg: err
+        }
     }
 }
 
-export { authJWT, ConfirmPasswd, randomJWT };
+/**
+ * Verify the cart JWT token
+ */
+const verifyCartToken = (token) => {
+    if(token.match(/\S+\.\S+\.\S+/) !== null) {
+        try{
+            const options = {
+                algorithm: 'RS256'
+            }
+            // verify using jsonwebtoken
+            const verif = jsonwebtoken.verify(token, RANDOM_PUB_KEY, options);
+            if(verif){
+                return true
+            } 
+
+        } catch(err){
+            if (err instanceof jsonwebtoken.JsonWebTokenError || err instanceof jsonwebtoken.NotBeforeError){
+                return false
+            } else {
+                next(err)
+            }
+        }
+    } else {
+        console.log("invalid token in the cart DB")
+    }
+}
+
+export { randomJWT, verifyToken, verifyCartToken };

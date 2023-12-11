@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 
 const userSchema = mongoose.Schema({
+    _id: {
+        type: String,
+        required: true
+    },
     username: {
         type: String,
         required: [true, "Enter a username"]
@@ -8,10 +12,6 @@ const userSchema = mongoose.Schema({
     email: {
         type: String,
         required: [true, "Enter an email address"]
-    },
-    password: {
-        type: String,
-        required: [true, "Enter your password"]
     },
     admin: {
         type: Boolean

@@ -1,42 +1,52 @@
-import fs from 'fs';
-import path from 'path';
-import passportJwt from 'passport-jwt';
-const JwtStrategy = passportJwt.Strategy;
-import { ExtractJwt } from 'passport-jwt';
-import { fileURLToPath } from 'url';
-import User from '../models/userModel.js';
+import dotenv from 'dotenv';
+import passportGoogle from 'passport-google-oauth20';
+const GoogleStrategy = passportGoogle.Strategy;
+import passportFacebook from 'passport-facebook';
+const FacebookStrategy = passportFacebook.Strategy;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+dotenv.config();
 
-const pathToKey = path.join(__dirname, '..', 'log_in_pub.pem');
-const PUB_KEY = fs.readFileSync(pathToKey, 'utf8');
+/**
+ * Google login w/ Passport
+ */
+const google_strategy = new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: 'http://localhost:3001/user/google-auth-callback',
+    scope: ['profile', 'email']
+},function(accessToken, refreshToken, profile, done){
+    // const user_profile = profile
+    return done(null, profile);
+})
 
-const options = {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: PUB_KEY,
-    algorithms: ['RS256']
-};
+/**
+ * Facebook login w/ Passport
+ */
+const facebook_strategy = new FacebookStrategy({
+    clientID: process.env.FACEBOOK_CLIENT_ID,
+    clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+    callbackURL: 'http://localhost:3001/user/facebook-auth-callback',
+    profileFields: ['id', 'email', 'name']
+},function(accessToken, refreshToken, profile, done){
+    // const user_profile = profile
+    return done(null, profile);
+})
 
-const strategy = new JwtStrategy(options, async(payload, done) => {
-    try{
-        // find the user with the _id
-        const user = await User.findOne({ _id: payload.sub })
-        // verify if the user was found or not
-        if(user){
-            // if found return the user
-            return done(null,user);
-        } else {
-            // if not found return false
-            return done(null, false);
-        }
-    } catch(err){
-        done(err, null)
-    }
-});
+/**
+ * Set up Passport js
+ */
+const passport_setup = (passport) => {
 
-const passPort = (passport) => {
-    passport.use(strategy)
+    passport.use(google_strategy);
+    passport.use(facebook_strategy);
+
+    passport.serializeUser((user, cb) => {
+        cb(null, user);
+    });
+
+    passport.deserializeUser((obj, cb) => {
+        cb(null, obj);
+    });
 }
 
-export default passPort;
+export default passport_setup;

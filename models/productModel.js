@@ -21,6 +21,9 @@ const productSchema = mongoose.Schema({
         type: Number,
         required: true
     },
+    blurhash: {
+        type: String
+    },
     images: [{
         _id: {
             type: String,

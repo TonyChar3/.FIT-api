@@ -1,10 +1,10 @@
 import express from 'express';
-import passport from 'passport';
 import { addToWishList, removeFromWishList, allWishList } from '../controller/wishListController.js';
+import { AuthVerification } from '../middleware/utilsAuth.js';
 
 const router = express.Router();
 
-router.use(passport.authenticate('jwt', { session: false }))
+router.use(AuthVerification);
 
 router.get('/Wishlist', allWishList);
 
