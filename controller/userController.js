@@ -134,15 +134,13 @@ const logOutUser = asyncHandler(async(req,res,next) => {
 //@route GET /fit-user
 //@access public
 const anonymousUser = asyncHandler( async(req,res,next) => {
-    // separate the Bearer and the token parts
-    const verification = await verifyToken(req.headers.cookie);
-    // get the hash from the cookie header
-    const fit_customer_hash = req.headers.cookie.split(';').find((cookie) => cookie.startsWith('fit-hash='));
-    const fit_customer_token = req.headers.cookie.split(';').find((cookie) => cookie.startsWith('fit-customer='));
-    if(!fit_customer_hash || !fit_customer_token || verification.error){
-        //generate a random empty JWT token
-        const tokenObject = randomJWT();
-        try{
+    try{
+        // separate the Bearer and the token parts
+        const verification = await verifyToken(req.headers.cookie);
+        // get the hash from the cookie header
+        if(!req.headers.cookie.split(';').find((cookie) => cookie.startsWith('fit-hash=')) || !req.headers.cookie.split(';').find((cookie) => cookie.startsWith('fit-customer=')) || verification.error){
+            //generate a random empty JWT token
+            const tokenObject = randomJWT();
             // using the random JWT to create a small hash
             const hashToken = await bcrypt.hash(tokenObject.token, 10);
             // if the hash is generated
@@ -154,12 +152,12 @@ const anonymousUser = asyncHandler( async(req,res,next) => {
             } else {
                 throw new Error("Unable to create new acces token");
             }
-        } catch(err){
-            console.log(err)
-            next(err);
         }
+        res.status(200).json({ success: true });
+    } catch(err){
+        console.log(err)
+        next(err);
     }
-    res.status(200).json({ success: true });
 });
 
 //@desc The current logged in user
