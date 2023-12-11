@@ -15,8 +15,7 @@ import cookieParser from 'cookie-parser';
 import { verifyExpiredCartDB } from './utils/manageCart.js';
 import passport_setup from './config/passport.js';
 import redis from 'redis';
-import connectRedis from 'connect-redis';
-const RedisSession = new connectRedis(session);
+import RedisStore from 'connect-redis';
 import stripeRoutes from './routes/stripeRoutes.js';
 import stripe from 'stripe';
 const stripeInstance = stripe(process.env.STRIPE_KEY);
@@ -53,12 +52,15 @@ const redis_wishlist_storage = redis.createClient({
 // redis session storage
 const redis_session_store = redis.createClient({
     url: process.env.REDIS_URL_CONNECT,
-    database: 6
+    database: 6,
+    legacyMode:true
 })
-// redis session store set up
-const redis_store = new RedisSession({
-    client: redis_session_store,
-    ttl: 86400
+// connect the session store
+redis_session_store.connect().then(() => {
+    console.log('Redis session store is connected');
+})
+.catch((err) => {
+    console.log('Redis session store ERROR: ', err)
 });
 // use the express framework
 const app = express();
@@ -66,7 +68,7 @@ const app = express();
 const port = process.env.PORT || 8080;
 // initialize new session
 app.use(session({
-    store: redis_store,
+    store: new RedisStore({ client: redis_session_store, ttl: 86400 }),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true
@@ -151,14 +153,6 @@ app.listen(port, () => {
     })
     .catch((err) => {
         console.log('Redis wishlist client ERROR: ', err)
-    });
-
-
-    redis_session_store.connect().then(() => {
-        console.log('Redis session store is connected');
-    })
-    .catch((err) => {
-        console.log('Redis session store ERROR: ', err)
     });
 });
 
