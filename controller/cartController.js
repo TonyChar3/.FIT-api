@@ -1,5 +1,4 @@
 import asyncHandler from 'express-async-handler';
-import Cart from '../models/cartModel.js';
 import { redis_cart_storage } from '../server.js';
 import { findCachedProduct } from '../utils/manageCacheFunctions.js';
 import { cookiesIdentityVerification } from '../middleware/utilsAuth.js';
@@ -19,42 +18,22 @@ const customerCart = asyncHandler( async(req,res,next) => {
         const cart_isCached = await redis_cart_storage.get(`${user_cart_id}`);
         // if it is not found in the cache
         if(!cart_isCached){
+            // create a new cart
+            const new_user_cart = {
+                _id: user_cart_id,
+                products: []
+            }
             // if the user is authenticated
             if(req.isAuthenticated() && req.user){
-                // find a cart using this token as the id
-                const cart = await Cart.findOne({ _id: user_cart_id });
-                if(!cart){
-                    // create a new cart in the DB
-                    const new_auth_user_cart = {
-                        _id: user_cart_id,
-                        products: []
-                    }
-                    await Promise.all([
-                        // set a new cached cart object for 30 min
-                        redis_cart_storage.set(user_cart_id, JSON.stringify(new_auth_user_cart), "EX", 3600),
-                        // create a new cart in the DB
-                        Cart.create({
-                            _id: user_cart_id
-                        })
-                    ]);
-                    // send back the cart
-                    res.status(200).send(new_auth_user_cart);
-                }
-                // set a new cached cart object for 30 min
-                await redis_cart_storage.set(user_cart_id, JSON.stringify(cart), "EX", 3600);
-                // send the cart
-                res.status(200).send(cart);
-
-            } else {
-                // create a new cart in the DB
-                const new_customer_cart = {
-                    _id: user_cart_id,
-                    products: []
-                }
-                // set a new cached cart object for 30 min
-                await redis_cart_storage.set(user_cart_id, JSON.stringify(new_customer_cart), "EX", 3600);
+                // set the authenticated user cart to expire after 48 hours
+                await redis_cart_storage.set(user_cart_id, JSON.stringify(new_user_cart), "EX", 172800)
                 // send back the cart
-                res.status(200).send(new_customer_cart);
+                res.status(200).send(new_user_cart);
+            } else {
+                // set a new cached cart object for 30 min
+                await redis_cart_storage.set(user_cart_id, JSON.stringify(new_user_cart), "EX", 3600);
+                // send back the cart
+                res.status(200).send(new_user_cart);
             }
         } else if (cart_isCached){
             // send it back to the frontend
@@ -107,15 +86,6 @@ const customerAddItem = asyncHandler( async(req,res,next) => {
             cart.products.push(new_item);
             // cache it again
             await redis_cart_storage.set(user_cart_id, JSON.stringify(cart), "EX", 3600);
-            // if the user is authenticated save it to the DB
-            if(req.isAuthenticated()){
-                await Cart.updateOne({
-                    _id: user_cart_id,
-                    $push:{
-                        products: new_item
-                    }
-                });
-            }
         }
         res.status(200).send({ message: 'Item added'})
     } catch(err){
@@ -140,17 +110,6 @@ const customerRemoveItem = asyncHandler( async(req,res,next) => {
         cached_cart.products.splice(find_item, 1);
         // set it back
         await redis_cart_storage.set(user_cart_id, JSON.stringify(cached_cart), "EX", 3600);
-        // if it is a authenticated user
-        if(req.isAuthenticated() && req.user){
-            // find the cart
-            const cart = await Cart.findOne({ _id: user_cart_id });
-            if(!cart){
-                res.status(404);
-                throw new Error("No carts was found");
-            }
-            cart.products.splice(find_item, 1);
-            await cart.save();
-        }
         res.json({ message: "Item removed"});
     }catch(err){
         next(err);
@@ -193,17 +152,6 @@ const modifyItem = asyncHandler( async(req,res,next) => {
         }
         // save the update to redis
         await redis_cart_storage.set(user_cart_id, JSON.stringify(cached_cart),"EX", 3600);
-        // if the user is authenticated
-        if(req.isAuthenticated() && req.user){
-            // find the cart in the DB
-            const auth_user_cart = await Cart.findOne({ _id: user_cart_id });
-            if(auth_user_cart){
-                // update the whole product array
-                auth_user_cart.products = cached_cart.products
-                // save
-                await auth_user_cart.save();
-            }
-        }
         // send back success response
         res.status(200).send({ message: "Qty updated"});
     } catch(err){
