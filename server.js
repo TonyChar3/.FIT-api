@@ -87,7 +87,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // Cross-Origin Resource Sharing
 app.use(cors({
-    origin: ['http://localhost:5173','http://10.0.0.78:5173','https://fit-shop.tony-char3.com','https://fit-website-tonychar3.vercel.app'],
+    origin: ['http://localhost:5173','http://10.0.0.78:5173','https://reliable-mochi-7511c9.netlify.app'],
     credentials: true
 }));
 // to protect the headers of our request
