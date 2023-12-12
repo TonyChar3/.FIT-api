@@ -87,7 +87,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // Cross-Origin Resource Sharing
 app.use(cors({
-    origin: 'https://fit-website-tonychar3.vercel.app',
+    origin: 'http://localhost:5173',
     credentials: true
 }));
 // to protect the headers of our request
