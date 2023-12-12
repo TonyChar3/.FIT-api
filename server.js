@@ -87,7 +87,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // Cross-Origin Resource Sharing
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: 'https://fit-website-zeta.vercel.app/',
     credentials: true
 }));
 // to protect the headers of our request

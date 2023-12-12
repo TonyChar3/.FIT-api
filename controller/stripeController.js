@@ -35,8 +35,8 @@ const createPaymentIntent = asyncHandler( async(req,res,next) => {
               customer: StripeCustomer.id,
               line_items: line_items,
               mode: 'payment',
-              success_url: 'http://localhost:3000/success',
-              cancel_url: 'http://localhost:3000/shop',
+              success_url: 'https://fit-website-zeta.vercel.app/success',
+              cancel_url: 'https://fit-website-zeta.vercel.app/shop',
               automatic_tax: { enabled: true },
               submit_type: 'auto',
               customer_update: {
