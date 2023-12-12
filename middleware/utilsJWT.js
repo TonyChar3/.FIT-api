@@ -40,6 +40,7 @@ const verifyToken = async(token) => {
         jsonwebtoken.verify(fit_customer_cookie.split('=')[1], PRIV_KEY);
         return true
     } catch(err){
+        console.log('Returning to set new user cookies...')
         return {
             error: true,
             error_msg: err

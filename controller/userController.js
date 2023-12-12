@@ -139,6 +139,7 @@ const anonymousUser = asyncHandler( async(req,res,next) => {
         const verification = await verifyToken(req.headers.cookie);
         // get the hash from the cookie header
         if(verification.error){
+            console.log('Will set new user cookies...')
             //generate a random empty JWT token
             const tokenObject = randomJWT();
             // using the random JWT to create a small hash
