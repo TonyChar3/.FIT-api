@@ -150,7 +150,7 @@ const anonymousUser = asyncHandler( async(req,res,next) => {
                 res.status(200).cookie('fit-hash', hashToken, { expires: new Date(2030,0), maxAge: 48 * 60 * 60 * 1000, httpOnly: true, path:'/', sameSite: 'none', secure: true })
                 res.status(200).json({ success: true });
                 return
-            } else 
+            } else {
                 throw new Error("Unable to create new acces token");
             }
         }
