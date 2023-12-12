@@ -12,7 +12,6 @@ import adminRoutes from './routes/adminRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import cookieParser from 'cookie-parser';
-import { verifyExpiredCartDB } from './utils/manageCart.js';
 import passport_setup from './config/passport.js';
 import redis from 'redis';
 import RedisStore from 'connect-redis';
@@ -114,18 +113,6 @@ app.use('/admin', adminRoutes);
 
 // to handle the error
 app.use(errorHandler);
-// function to clear the cart DB of expired carts
-setInterval(
-    (async () => {
-        try{
-            await verifyExpiredCartDB();
-        } catch(error) {
-            console.log(error)
-        }
-    }),
-    24 * 60 * 60 * 1000
-);
-
 // start up the server
 app.listen(port, () => {
     console.log(`Secured server is running on port ${port}`)

@@ -1,5 +1,4 @@
 import Order from '../models/orderModel.js';
-import Cart from '../models/cartModel.js';
 import { redis_cart_storage } from '../server.js';
 
 /**
@@ -48,14 +47,8 @@ const createOrder = async(customer, data) => {
  */
 const clearCartData = async(cartID) => {
     try{
-        const [ delete_cart_cache, auth_user_cart ] = await Promise.all([
-            redis_cart_storage.del(`${cartID}`),
-            Cart.findOne({ _id: cartID })
-        ]);
-        // clear all the data inside
-        auth_user_cart.products = [];
-        // save the updated data
-        await auth_user_cart.save();
+        // delete the cart from the cache
+        await redis_cart_storage.del(`${cartID}`);
     } catch(err){
         return {
             error: true,
