@@ -35,8 +35,8 @@ const createPaymentIntent = asyncHandler( async(req,res,next) => {
               customer: StripeCustomer.id,
               line_items: line_items,
               mode: 'payment',
-              success_url: 'https://fit-website-tonychar3.vercel.app/success',
-              cancel_url: 'https://fit-website-tonychar3.vercel.app/shop',
+              success_url: 'https://fit-shop.tony-char3.com/success',
+              cancel_url: 'https://fit-shop.tony-char3.com/shop',
               automatic_tax: { enabled: true },
               submit_type: 'auto',
               customer_update: {
