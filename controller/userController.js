@@ -146,8 +146,8 @@ const anonymousUser = asyncHandler( async(req,res,next) => {
             const hashToken = await bcrypt.hash(tokenObject.token, 10);
             // if the hash is generated
             if(hashToken){
-                res.status(200).cookie('fit-customer', tokenObject.token, { maxAge: 48 * 60 * 60 * 1000, domain:'.tony-char3.com', httpOnly: true, path:'/', sameSite: 'none', secure: true })
-                res.status(200).cookie('fit-hash', hashToken, { maxAge: 48 * 60 * 60 * 1000, domain:'.tony-char3.com', httpOnly: true, path:'/', sameSite: 'none', secure: true })
+                res.status(200).cookie('fit-customer', tokenObject.token, { maxAge: 48 * 60 * 60 * 1000, httpOnly: true, path:'/', sameSite: 'none', secure: true })
+                res.status(200).cookie('fit-hash', hashToken, { maxAge: 48 * 60 * 60 * 1000, httpOnly: true, path:'/', sameSite: 'none', secure: true })
                 res.status(200).json({ success: true });
                 return
             } else {
