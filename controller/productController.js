@@ -12,6 +12,7 @@ import { cookiesIdentityVerification } from '../middleware/utilsAuth.js';
 //@access PUBLIC
 const allListedProducts = asyncHandler( async(req,res,next) => {
     try{
+        console.log('Product request: ',req);
         // verify the identity
         await cookiesIdentityVerification(req,res);
         // verify the cache if they're already set
