@@ -147,13 +147,13 @@ const anonymousUser = asyncHandler( async(req,res,next) => {
             if(hashToken){
                 res.status(200).cookie('fit-customer', tokenObject.token, { expires: new Date(2030,0), maxAge: 48 * 60 * 60 * 1000, domain:'.tony-char3.com', httpOnly: true, path:'/', sameSite: 'none', secure: true })
                 res.status(200).cookie('fit-hash', hashToken, { expires: new Date(2030,0), maxAge: 48 * 60 * 60 * 1000, domain:'.tony-char3.com', httpOnly: true, path:'/', sameSite: 'none', secure: true })
-                res.status(200).json({ success: true });
+                res.status(200).json({ success: 'newly set' });
                 return
             } else {
                 throw new Error("Unable to create new acces token");
             }
         }
-        res.status(200).json({ success: true });
+        res.status(200).json({ success: 'already set' });
     } catch(err){
         console.log(err)
         next(err);
