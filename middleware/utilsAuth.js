@@ -30,7 +30,6 @@ const cookiesIdentityVerification = async(req,res) => {
  * Verify authencation token
  */
 const AuthVerification = (req,res,next) => {
-    console.log("Verification: ", req.isAuthenticated());
     if(req.isAuthenticated()){
         next()
     } else {

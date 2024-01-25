@@ -25,7 +25,7 @@ const addToWishList = asyncHandler( async(req,res,next) => {
             res.status(200).json({ message: "already added to your wishlist"});
         } else {
             // add it to the array
-            await user.updateOne({
+            await User.updateOne({
                 $push: {
                     wishlist: {
                         _id: prodct_id,
