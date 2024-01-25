@@ -18,6 +18,8 @@ const addToWishList = asyncHandler( async(req,res,next) => {
             User.findOne({ _id: req.user.id }),
             findCachedProduct(prodct_id)
         ]);
+        console.log(user)
+        console.log(product)
         // check if the product is not already added to the wishlist
         const isAdded = user.wishlist.findIndex(prodct => prodct._id.toString() === prodct_id.toString());
         // if the product is already added
@@ -38,6 +40,7 @@ const addToWishList = asyncHandler( async(req,res,next) => {
             res.status(201).json({ message: 'added to the wishlist' });
         }
     } catch(err){
+        console.log("Add wishlist: ", err);
         next(err);
     }
 });
