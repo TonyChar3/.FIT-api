@@ -4,13 +4,11 @@ import { AuthVerification } from '../middleware/utilsAuth.js';
 
 const router = express.Router();
 
-router.use(AuthVerification);
+router.get('/Wishlist', AuthVerification, allWishList);
 
-router.get('/Wishlist', allWishList);
+router.post('/addWishlist', AuthVerification, addToWishList);
 
-router.post('/addWishlist', addToWishList);
-
-router.delete('/removeWishlist', removeFromWishList );
+router.delete('/removeWishlist', AuthVerification, removeFromWishList );
 
 export default router;
 
