@@ -65,11 +65,11 @@ const googleLoginSuccess = asyncHandler(async(req,res,next) => {
                 admin: false
             });
             if(user){
-                res.redirect('http://localhost:3000/login')
+                res.redirect('https://fit-shop.tony-char3.com/login')
             }
         // if yes -> redirect
         } else {
-            res.redirect('http://localhost:3000/login')
+            res.redirect('https://fit-shop.tony-char3.com/login')
         }
     } catch(err){
         next(err)
@@ -95,11 +95,11 @@ const facebookLoginSuccess = asyncHandler(async(req,res,next) => {
                 admin: false
             });
             if(user){
-                res.redirect('http://localhost:3000/login')
+                res.redirect('https://fit-shop.tony-char3.com/login')
             }
         // if yes -> redirect
         } else {
-            res.redirect('http://localhost:3000/login')
+            res.redirect('https://fit-shop.tony-char3.com/login')
         }
     } catch(err){
         next(err)
