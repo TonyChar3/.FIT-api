@@ -12,7 +12,7 @@ dotenv.config();
 const google_strategy = new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: 'http://localhost:3001/user/google-auth-callback',
+    callbackURL: 'https://server-fit-shop.tony-char3.com/user/google-auth-callback',
     scope: ['profile', 'email']
 },function(accessToken, refreshToken, profile, done){
     // const user_profile = profile
@@ -25,7 +25,7 @@ const google_strategy = new GoogleStrategy({
 const facebook_strategy = new FacebookStrategy({
     clientID: process.env.FACEBOOK_CLIENT_ID,
     clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-    callbackURL: 'http://localhost:3001/user/facebook-auth-callback',
+    callbackURL: 'https://server-fit-shop.tony-char3.com/user/facebook-auth-callback',
     profileFields: ['id', 'email', 'name']
 },function(accessToken, refreshToken, profile, done){
     // const user_profile = profile
