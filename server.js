@@ -14,7 +14,7 @@ import cartRoutes from "./routes/cartRoutes.js";
 import cookieParser from "cookie-parser";
 import passport_setup from "./config/passport.js";
 import redis from "redis";
-import RedisStore from "connect-redis";
+import { RedisStore } from "connect-redis";
 import stripeRoutes from "./routes/stripeRoutes.js";
 import stripe from "stripe";
 const stripeInstance = stripe(process.env.STRIPE_KEY);
